@@ -7,6 +7,3 @@
 [submodule "thirdparty/glfw"]
 	path = thirdparty/glfw
 	url = https://github.com/glfw/glfw.git
-[submodule "thirdparty/emscripten-sdk"]
-	path = thirdparty/emscripten-sdk
-	url = https://github.com/emscripten-core/emsdk.git
