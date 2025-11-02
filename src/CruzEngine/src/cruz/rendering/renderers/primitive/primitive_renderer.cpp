@@ -104,22 +104,23 @@ void PrimitiveRenderer::DrawQuad(float x, float y, float width, float height, co
 
 void PrimitiveRenderer::DrawTexturedQuad(float x, float y, float width, float height, Texture* texture)
 {
-    if(!texture) return;
+    if (!texture) return;
 
     float hw = width * 0.5f;
     float hh = height * 0.5f;
 
     std::vector<TexturedVertex> verts = {
-        TexturedVertex{ x - hw, y - hh, 0.0f, 1,1,1,1, 0,0 },
-        TexturedVertex{ x + hw, y - hh, 0.0f, 1,1,1,1, 1,0 },
-        TexturedVertex{ x + hw, y + hh, 0.0f, 1,1,1,1, 1,1 },
+        TexturedVertex{ x - hw, y - hh, 0.0f, 1,1,1,1, 0, 1 }, // dolny lewy
+        TexturedVertex{ x + hw, y - hh, 0.0f, 1,1,1,1, 1, 1 }, // dolny prawy
+        TexturedVertex{ x + hw, y + hh, 0.0f, 1,1,1,1, 1, 0 }, // górny prawy
 
-        TexturedVertex{ x - hw, y - hh, 0.0f, 1,1,1,1, 0,0 },
-        TexturedVertex{ x + hw, y + hh, 0.0f, 1,1,1,1, 1,1 },
-        TexturedVertex{ x - hw, y + hh, 0.0f, 1,1,1,1, 0,1 }
+        TexturedVertex{ x - hw, y - hh, 0.0f, 1,1,1,1, 0, 1 }, // dolny lewy
+        TexturedVertex{ x + hw, y + hh, 0.0f, 1,1,1,1, 1, 0 }, // górny prawy
+        TexturedVertex{ x - hw, y + hh, 0.0f, 1,1,1,1, 0, 0 }  // górny lewy
     };
 
     m_texVertices.insert(m_texVertices.end(), verts.begin(), verts.end());
+
     m_currentTexture = texture;
 }
 
