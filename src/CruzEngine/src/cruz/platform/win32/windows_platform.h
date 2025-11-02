@@ -19,10 +19,10 @@ public:
     int GetKeyPressed(int key) override;
     void* GetProcAddress() override;
     uint64_t AddResizeCallback(std::function<void(int,int)> func) override;
-    void RemoveResizeCallback(uint64_t id);
-    bool GetKeyDown(KeyCode key);
-    bool GetKeyUp(KeyCode key);
-    bool GetKey(KeyCode key);
+    void RemoveResizeCallback(uint64_t id) override;
+    bool GetKeyDown(KeyCode key) override;
+    bool GetKeyUp(KeyCode key) override;
+    bool GetKey(KeyCode key) override;
 
 
     GLFWwindow* GetWindow() { return window; }

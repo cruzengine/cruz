@@ -90,6 +90,7 @@
     "__locale": "cpp",
     "__node_handle": "cpp",
     "__verbose_abort": "cpp",
-    "string_view": "cpp"
+    "string_view": "cpp",
+    "set": "cpp"
 }
 }

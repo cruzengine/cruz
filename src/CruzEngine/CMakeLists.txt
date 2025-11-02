@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.15)
 project(CruzCore)
 
-file(GLOB_RECURSE CORE_SOURCES src/cruz/core/*.cpp src/cruz/core/*.h)
+file(GLOB_RECURSE CORE_SOURCES
+    src/cruz/core/*.cpp
+    src/cruz/core/*.h
+)
 
 if(NOT CORE_SOURCES)
     message(FATAL_ERROR "No source files found in cruz-core/src")
@@ -20,31 +23,32 @@ target_include_directories(CruzCore PUBLIC "${EMSCRIPTEN_INCLUDE}")
 target_compile_definitions(CruzCore PUBLIC GLFW_INCLUDE_NONE)
 
 if(EMSCRIPTEN)
-    message("Detected backend: EMSCRIPTEN")
     target_compile_definitions(CruzCore PUBLIC EMSCRIPTEN)
+    add_subdirectory(src/cruz/rendering/backends/webgl)
+    target_link_libraries(CruzCore PUBLIC BackendWebGL)
+    add_subdirectory(src/cruz/platform/web)
+    target_link_libraries(CruzCore PUBLIC WebPlatform)
 else()
     set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
     set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
     add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/glfw ${CMAKE_BINARY_DIR}/thirdparty/glfw)
     add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/glad ${CMAKE_BINARY_DIR}/thirdparty/glad)
-
     target_link_libraries(CruzCore PUBLIC glfw glad)
-endif()
-
-if(EMSCRIPTEN)
-    add_subdirectory(src/cruz/rendering/backends/webgl)
-    target_link_libraries(CruzCore PUBLIC BackendWebGL)
-
-    add_subdirectory(src/cruz/platform/web)
-    target_link_libraries(CruzCore PUBLIC WebPlatform)
-else()
     add_subdirectory(src/cruz/rendering/backends/opengl)
     target_link_libraries(CruzCore PUBLIC BackendOpenGL)
-
     add_subdirectory(src/cruz/platform/win32)
     target_link_libraries(CruzCore PUBLIC WindowsPlatform)
 endif()
 
 add_subdirectory(src/cruz/rendering/renderers/primitive)
 target_link_libraries(CruzCore PUBLIC PrimitiveRenderer)
+
+# ZLIB
+add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/zlib ${CMAKE_BINARY_DIR}/thirdparty/zlib)
+set(ZLIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/thirdparty/zlib)
+set(ZLIB_LIBRARY zlibstatic)
+
+# LIBPNG x ZLIB
+add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/libpng ${CMAKE_BINARY_DIR}/thirdparty/libpng)
+target_link_libraries(CruzCore PUBLIC png_static zlibstatic)

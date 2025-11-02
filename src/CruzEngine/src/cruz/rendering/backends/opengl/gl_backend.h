@@ -1,6 +1,7 @@
 #pragma once
 #include <cruz/core/rendering_backend.h>
 #include <cruz/core/mat4.h>
+#include <cruz/core/texture.h>
 #include <vector>
 #include <glad/glad.h>
 #include <chrono>
@@ -21,9 +22,15 @@ public:
 
     void Draw(const std::vector<Vertex>& vertices) override;
     void Draw(const std::vector<ColoredVertex>& vertices) override;
+    void Draw(const std::vector<TexturedVertex>& vertices) override;
 
     void UploadVertices(const std::vector<Vertex>& vertices) override;
     void DrawUploadedVertices() override;
+
+    void BindTexture(Texture* texture) override;
+    void UnbindTexture() override;
+
+    void UploadTexture(Texture* texture) override;
 
     const Mat4& GetProjection() const override { return projection; }
 
@@ -35,4 +42,8 @@ private:
     GLuint vbo = 0;
     GLsizei vertexCount = 0;
     bool coloredVAO = false;
+    unsigned int m_currentBoundTexture = 0;
+
+    GLuint m_texVAO = 0;
+    GLuint m_texVBO = 0;
 };

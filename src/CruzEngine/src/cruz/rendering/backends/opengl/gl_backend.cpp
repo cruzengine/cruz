@@ -16,6 +16,9 @@ void GlBackend::Initialize() {
     }
     glEnable(GL_MULTISAMPLE);
 
+    glGenVertexArrays(1, &m_texVAO);
+    glGenBuffers(1, &m_texVBO);
+
     platform->AddResizeCallback([this](int w,int h){ 
         glViewport(0,0,w,h);
     });
@@ -98,6 +101,25 @@ void GlBackend::Draw(const std::vector<ColoredVertex>& verts){
     DrawUploadedVertices();
 }
 
+void GlBackend::Draw(const std::vector<TexturedVertex>& vertices)
+{
+    if(vertices.empty()) return;
+
+    glBindVertexArray(m_texVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_texVBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(TexturedVertex), vertices.data(), GL_DYNAMIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)(offsetof(TexturedVertex, r)));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)(offsetof(TexturedVertex, u)));
+    glEnableVertexAttribArray(2);
+
+    glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+}
+
+
 void GlBackend::UploadVertices(const std::vector<Vertex>& verts){
     if(verts.empty()) return;
     if(vao!=0){ glDeleteBuffers(1,&vbo); glDeleteVertexArrays(1,&vao); }
@@ -124,6 +146,56 @@ void GlBackend::DrawUploadedVertices(){
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES,0,vertexCount);
     glBindVertexArray(0);
+}
+
+void GlBackend::UploadTexture(Texture* texture)
+{
+    if (!texture) return;
+
+    if (texture->GetGPUHandle() != 0) return; // już przesłane
+
+    GLuint handle;
+    glGenTextures(1, &handle);
+    glBindTexture(GL_TEXTURE_2D, handle);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->GetWidth(), texture->GetHeight(),
+                 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->GetData().data());
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    texture->SetGPUHandle(handle);
+}
+
+void GlBackend::BindTexture(Texture* texture)
+{
+    if (!texture) {
+        glBindTexture(GL_TEXTURE_2D, 0);
+        m_currentBoundTexture = 0;
+        return;
+    }
+
+    if (texture->GetGPUHandle() == 0)
+        UploadTexture(texture);
+
+    if (m_currentBoundTexture != texture->GetGPUHandle())
+    {
+        glBindTexture(GL_TEXTURE_2D, texture->GetGPUHandle());
+        m_currentBoundTexture = texture->GetGPUHandle();
+    }
+}
+
+void GlBackend::UnbindTexture()
+{
+    if (m_currentBoundTexture != 0)
+    {
+        glBindTexture(GL_TEXTURE_2D, 0);
+        m_currentBoundTexture = 0;
+    }
 }
 
 GlBackend::~GlBackend(){

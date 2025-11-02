@@ -4,6 +4,7 @@
 #include <cruz/core/shader.h>
 #include <cruz/core/platform.h>
 #include <cruz/core/vertex.h>
+#include <cruz/core/texture.h>
 #include <vector>
 #include <string>
 
@@ -31,9 +32,15 @@ public:
 
     virtual void Draw(const std::vector<Vertex>& vertices) = 0;
     virtual void Draw(const std::vector<ColoredVertex>& vertices) = 0;
+    virtual void Draw(const std::vector<TexturedVertex>& vertices) = 0;
 
     virtual void UploadVertices(const std::vector<Vertex>& vertices) = 0;
     virtual void DrawUploadedVertices() = 0;
+
+    virtual void BindTexture(Texture* texture) = 0;
+    virtual void UnbindTexture() = 0;
+
+    virtual void UploadTexture(Texture* texture) = 0;
 
     void SetPlatform(Platform* platform) { this->platform = platform; }
     Platform* GetPlatform() { return this->platform; }

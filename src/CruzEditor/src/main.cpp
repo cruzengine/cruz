@@ -4,6 +4,7 @@
 #include <cruz/core/orthographic_camera.h>
 #include <cmath>
 #include <cruz/core/vector.h>
+#include <iostream>
 
 int main() {
     Application app(800, 600, "Primitive Example");
@@ -25,6 +26,13 @@ int main() {
         camera.width  = float(newW);
         camera.height = float(newH);
     });
+
+    Texture* texture = Texture::LoadFromPNG("asd.png", "ASDTexture");
+    if (!texture) {
+        std::cerr << "Failed to load texture!" << std::endl;
+        return -1;
+    }
+    backend->UploadTexture(texture);
 
     Vector2 quadPos(0.0f, 0.0f);
     Vector2 quadVel(0.0f, 0.0f);
@@ -48,19 +56,14 @@ int main() {
         if (platform->GetKey(KeyCode::A)) inputAccel.x -= accel;
 
         quadVel += inputAccel * dt;
-
         float speed = quadVel.length();
-        if (speed > maxSpeed) {
-            quadVel = quadVel.normalized() * maxSpeed;
-        }
-
+        if (speed > maxSpeed) quadVel = quadVel.normalized() * maxSpeed;
         quadVel -= quadVel * damping * dt;
-
         quadPos += quadVel * dt;
 
-        float size = 40.0f;
-        float col = platform->GetKey(KeyCode::W) ? 1.0f : 0.0f;
-        primitive.DrawQuad(quadPos.x, quadPos.y, size, size, {1, col, 0, 1});
+        backend->BindTexture(texture);
+        primitive.DrawTexturedQuad(quadPos.x, quadPos.y, 100.0f, 100.0f, texture);
+        backend->UnbindTexture();
 
         primitive.EndFrame();
     });
