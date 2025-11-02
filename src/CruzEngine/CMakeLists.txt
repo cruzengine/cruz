@@ -1,25 +1,18 @@
 cmake_minimum_required(VERSION 3.15)
 project(CruzCore)
 
-file(GLOB_RECURSE CORE_SOURCES
-    src/cruz/core/*.cpp
-    src/cruz/core/*.h
-)
-
+file(GLOB_RECURSE CORE_SOURCES src/cruz/core/*.cpp src/cruz/core/*.h)
 if(NOT CORE_SOURCES)
     message(FATAL_ERROR "No source files found in cruz-core/src")
 endif()
 
 add_library(CruzCore STATIC ${CORE_SOURCES})
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 target_include_directories(CruzCore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 get_filename_component(EMSCRIPTEN_INCLUDE "${CMAKE_SOURCE_DIR}/../thirdparty/upstream/emscripten/cache/sysroot/include" ABSOLUTE)
 target_include_directories(CruzCore PUBLIC "${EMSCRIPTEN_INCLUDE}")
-
 target_compile_definitions(CruzCore PUBLIC GLFW_INCLUDE_NONE)
 
 if(EMSCRIPTEN)
@@ -44,11 +37,16 @@ endif()
 add_subdirectory(src/cruz/rendering/renderers/primitive)
 target_link_libraries(CruzCore PUBLIC PrimitiveRenderer)
 
-# ZLIB
-add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/zlib ${CMAKE_BINARY_DIR}/thirdparty/zlib)
+# --- ZLIB ---
+set(ZLIB_BUILD_STATIC ON)
+set(ZLIB_LIBRARY zlib)
 set(ZLIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/thirdparty/zlib)
-set(ZLIB_LIBRARY zlibstatic)
+add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/zlib ${CMAKE_BINARY_DIR}/thirdparty/zlib)
+target_include_directories(CruzCore PUBLIC ${CMAKE_SOURCE_DIR}/thirdparty/zlib)
 
-# LIBPNG x ZLIB
+# --- LIBPNG ---
+set(PNG_STATIC ON)
 add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/libpng ${CMAKE_BINARY_DIR}/thirdparty/libpng)
-target_link_libraries(CruzCore PUBLIC png_static zlibstatic)
+
+# --- Linkowanie statycznych bibliotek ---
+target_link_libraries(CruzCore PUBLIC ZLIB::ZLIBSTATIC png_static)
