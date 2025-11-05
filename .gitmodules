@@ -7,12 +7,9 @@
 [submodule "thirdparty/glfw"]
 	path = thirdparty/glfw
 	url = https://github.com/glfw/glfw.git
-[submodule "thirdparty/libpng"]
-	path = thirdparty/libpng
-	url = https://github.com/pnggroup/libpng
 [submodule "thirdparty/emscripten-sdk"]
 	path = thirdparty/emscripten-sdk
 	url = https://github.com/emscripten-core/emsdk
 [submodule "thirdparty/zlib"]
 	path = thirdparty/zlib
-	url = https://github.com/madler/zlib
+	url = https://github.com/cruzengine/zlib.git
