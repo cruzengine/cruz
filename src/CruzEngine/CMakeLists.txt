@@ -37,16 +37,21 @@ endif()
 add_subdirectory(src/cruz/rendering/renderers/primitive)
 target_link_libraries(CruzCore PUBLIC PrimitiveRenderer)
 
-# --- ZLIB ---
-set(ZLIB_BUILD_STATIC ON)
-set(ZLIB_LIBRARY zlib)
-set(ZLIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/thirdparty/zlib)
-add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/zlib ${CMAKE_BINARY_DIR}/thirdparty/zlib)
-target_include_directories(CruzCore PUBLIC ${CMAKE_SOURCE_DIR}/thirdparty/zlib)
+# ZLIB
+add_subdirectory(
+    ${CMAKE_SOURCE_DIR}/thirdparty/zlib
+    ${CMAKE_BINARY_DIR}/thirdparty/zlib
+    EXCLUDE_FROM_ALL
+)
 
-# --- LIBPNG ---
-set(PNG_STATIC ON)
-add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/libpng ${CMAKE_BINARY_DIR}/thirdparty/libpng)
+if(NOT TARGET zlib)
+    add_library(zlib ALIAS zlibstatic)
+endif()
 
-# --- Linkowanie statycznych bibliotek ---
-target_link_libraries(CruzCore PUBLIC ZLIB::ZLIBSTATIC png_static)
+add_subdirectory(
+    ${CMAKE_SOURCE_DIR}/thirdparty/libpng
+    ${CMAKE_BINARY_DIR}/thirdparty/libpng
+    EXCLUDE_FROM_ALL
+)
+
+target_link_libraries(CruzCore PUBLIC zlib libpng)
