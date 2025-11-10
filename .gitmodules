@@ -1,15 +1,6 @@
-[submodule "modules/cruz-core/thirdparty/glfw"]
-	path = modules/cruz-core/thirdparty/glfw
-	url = https://github.com/glfw/glfw
-[submodule "src/CruzEngine/thirdparty/glfw"]
-	path = src/CruzEngine/thirdparty/glfw
-	url = https://github.com/glfw/glfw.git
 [submodule "thirdparty/glfw"]
 	path = thirdparty/glfw
 	url = https://github.com/glfw/glfw.git
 [submodule "thirdparty/emscripten-sdk"]
 	path = thirdparty/emscripten-sdk
 	url = https://github.com/emscripten-core/emsdk
-[submodule "thirdparty/zlib"]
-	path = thirdparty/zlib
-	url = https://github.com/cruzengine/zlib.git
