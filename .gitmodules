@@ -4,3 +4,9 @@
 [submodule "thirdparty/emscripten-sdk"]
 	path = thirdparty/emscripten-sdk
 	url = https://github.com/emscripten-core/emsdk
+[submodule "thirdparty/zlib"]
+	path = thirdparty/zlib
+	url = https://github.com/madler/zlib
+[submodule "thirdparty/libpng"]
+	path = thirdparty/libpng
+	url = https://github.com/pnggroup/libpng
